@@ -102,6 +102,19 @@ pub mod pallet {
 		pub fn cleanup(origin: OriginFor<T>) -> DispatchResult {
 			panic!("unimplemented")
 		}
+
+		/// Triggers a force heartbeat request to all workers by sending a MAX pow target
+		///
+		/// Only for integration test.
+		#[pallet::weight(1)]
+		pub fn force_heartbeat(origin: OriginFor<T>) -> DispatchResult {
+			ensure_root(origin)?;
+			Self::push_message(SystemEvent::HeartbeatChallenge(HeartbeatChallenge {
+				seed: U256::zero(),
+				online_target: U256::MAX,
+			}));
+			Ok(())
+		}
 	}
 
 	#[pallet::hooks]
@@ -112,7 +125,6 @@ pub mod pallet {
 	}
 
 	// TODO(wenfeng):
-	// - push_message(SystemEvent::RewardSeed) regularly.
 	// - push_message(SystemEvent(WorkerEvent::MiningStart)) when start mining.
 	// - push_message(SystemEvent(WorkerEvent::MiningStop)) when entering CoolingDown state.
 	// - push_message(SystemEvent(WorkerEvent::MiningEnterUnresponsive)) when entering MiningUnresponsive state.
