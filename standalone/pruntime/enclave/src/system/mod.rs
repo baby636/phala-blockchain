@@ -232,7 +232,12 @@ impl WorkerState {
         // Push queue when necessary
         if online_hit {
             let iterations = callback.bench_iterations() - mining_state.start_iter;
-            callback.heartbeat(block.block_number, block.now_ms, mining_state.start_time, iterations);
+            callback.heartbeat(
+                block.block_number,
+                block.now_ms,
+                mining_state.start_time,
+                iterations,
+            );
         }
     }
 
@@ -429,6 +434,10 @@ impl System {
         self.worker_state
             .process_event(block, event, &mut WorkerSMDelegate(&self.egress), true);
         Ok(())
+    }
+
+    pub fn is_registered(&self) -> bool {
+        self.worker_state.registered
     }
 }
 
